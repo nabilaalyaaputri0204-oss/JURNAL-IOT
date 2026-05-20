@@ -1,29 +1,52 @@
+#define BLYNK_TEMPLATE_ID "TMPLxxxxxx"
+#define BLYNK_TEMPLATE_NAME "Flame Detector"
+#define BLYNK_AUTH_TOKEN "YourAuthToken"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "Nama_WiFi";
+char pass[] = "Password_WiFi";
+
 #define FLAME_SENSOR D5
-#define LED D6
+#define LED_PIN D6
 
 void setup() {
   Serial.begin(115200);
 
   pinMode(FLAME_SENSOR, INPUT);
-  pinMode(LED, OUTPUT);
+  pinMode(LED_PIN, OUTPUT);
 
-  digitalWrite(LED, LOW);
+  digitalWrite(LED_PIN, LOW);
 
-  Serial.println("Flame Sensor Aktif");
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  Serial.println("Sistem Flame Sensor Aktif");
 }
 
 void loop() {
+  Blynk.run();
+
   int flameValue = digitalRead(FLAME_SENSOR);
-  Serial.print("Nilai Flame Sensor: ");
+
+  Serial.print("Nilai Sensor Api: ");
   Serial.println(flameValue);
 
   if (flameValue == LOW) {
+
     Serial.println("API TERDETEKSI!");
-    digitalWrite(LED, HIGH);
+
+    digitalWrite(LED_PIN, HIGH);
+
+    Blynk.virtualWrite(V0, 1);
 
   } else {
+
     Serial.println("Tidak ada api");
-    digitalWrite(LED, LOW);
+
+    digitalWrite(LED_PIN, LOW);
+
+    Blynk.virtualWrite(V0, 0);
   }
 
   delay(500);
