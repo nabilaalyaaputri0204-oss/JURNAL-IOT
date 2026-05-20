@@ -1,0 +1,51 @@
+#define BLYNK_TEMPLATE_ID "TMPLxxxxxx"
+#define BLYNK_TEMPLATE_NAME "Soil Moisture Monitor"
+#define BLYNK_AUTH_TOKEN "YourAuthToken"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "Nama_WiFi";
+char pass[] = "Password_WiFi";
+
+#define SOIL_PIN A0
+#define BUZZER_PIN D5
+
+int soilValue;
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  Serial.println("Sistem Soil Moisture Aktif");
+}
+
+void loop() {
+  Blynk.run();
+
+  soilValue = analogRead(SOIL_PIN);
+
+  Serial.print("Nilai Kelembapan Tanah: ");
+  Serial.println(soilValue);
+
+  Blynk.virtualWrite(V0, soilValue);
+
+  if (soilValue > 700) {
+
+    Serial.println("Tanah Kering - Buzzer Menyala");
+
+    digitalWrite(BUZZER_PIN, HIGH);
+
+  } else {
+
+    Serial.println("Tanah Lembap - Buzzer Mati");
+
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  delay(1000);
+}
