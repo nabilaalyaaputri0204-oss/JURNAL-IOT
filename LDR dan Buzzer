@@ -1,0 +1,49 @@
+#define BLYNK_TEMPLATE_ID "TMPLxxxxxx"
+#define BLYNK_TEMPLATE_NAME "Monitoring LDR"
+#define BLYNK_AUTH_TOKEN "YourAuthToken"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+
+char ssid[] = "Nama_WiFi";
+char pass[] = "Password_WiFi";
+
+#define LDR_PIN A0
+#define BUZZER_PIN D5
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(BUZZER_PIN, OUTPUT);
+  digitalWrite(BUZZER_PIN, LOW);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  Serial.println("Sistem Monitoring LDR Aktif");
+}
+
+void loop() {
+  Blynk.run();
+
+  int ldrValue = analogRead(LDR_PIN);
+
+  Serial.print("Nilai LDR: ");
+  Serial.println(ldrValue);
+
+  Blynk.virtualWrite(V0, ldrValue);
+
+  if (ldrValue < 300) {
+
+    Serial.println("Kondisi Gelap - Buzzer Menyala");
+
+    digitalWrite(BUZZER_PIN, HIGH);
+
+  } else {
+
+    Serial.println("Kondisi Terang - Buzzer Mati");
+
+    digitalWrite(BUZZER_PIN, LOW);
+  }
+
+  delay(1000);
+}
