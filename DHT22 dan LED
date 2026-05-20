@@ -1,0 +1,63 @@
+#define BLYNK_TEMPLATE_ID "TMPLxxxxxx"
+#define BLYNK_TEMPLATE_NAME "Monitoring DHT22"
+#define BLYNK_AUTH_TOKEN "YourAuthToken"
+
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <DHT.h>
+
+char ssid[] = "Nama_WiFi";
+char pass[] = "Password_WiFi";
+
+#define DHTPIN D5
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE);
+
+#define LED_PIN D6
+
+void setup() {
+  Serial.begin(115200);
+
+  dht.begin();
+
+  pinMode(LED_PIN, OUTPUT);
+  digitalWrite(LED_PIN, LOW);
+
+  Blynk.begin(BLYNK_AUTH_TOKEN, ssid, pass);
+
+  Serial.println("Monitoring DHT22 Aktif");
+}
+
+void loop() {
+  Blynk.run();
+
+  float suhu = dht.readTemperature();
+  float kelembapan = dht.readHumidity();
+
+  if (isnan(suhu) || isnan(kelembapan)) {
+    Serial.println("Gagal membaca sensor DHT22");
+    return;
+  }
+
+  Serial.print("Suhu: ");
+  Serial.print(suhu);
+  Serial.println(" °C");
+
+  Serial.print("Kelembapan: ");
+  Serial.print(kelembapan);
+  Serial.println(" %");
+
+  Blynk.virtualWrite(V0, suhu);
+  Blynk.virtualWrite(V1, kelembapan);
+
+  if (suhu > 30) {
+    digitalWrite(LED_PIN, HIGH);
+    Serial.println("LED MENYALA - Suhu Panas");
+  } else {
+    digitalWrite(LED_PIN, LOW);
+    Serial.println("LED MATI - Suhu Normal");
+  }
+
+  delay(2000);
+}
