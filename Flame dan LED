@@ -1,0 +1,30 @@
+#define FLAME_SENSOR D5
+#define LED D6
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(FLAME_SENSOR, INPUT);
+  pinMode(LED, OUTPUT);
+
+  digitalWrite(LED, LOW);
+
+  Serial.println("Flame Sensor Aktif");
+}
+
+void loop() {
+  int flameValue = digitalRead(FLAME_SENSOR);
+  Serial.print("Nilai Flame Sensor: ");
+  Serial.println(flameValue);
+
+  if (flameValue == LOW) {
+    Serial.println("API TERDETEKSI!");
+    digitalWrite(LED, HIGH);
+
+  } else {
+    Serial.println("Tidak ada api");
+    digitalWrite(LED, LOW);
+  }
+
+  delay(500);
+}
